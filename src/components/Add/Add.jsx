@@ -1,7 +1,7 @@
 import React, { useState} from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-
+import Swal from "sweetalert2";
 const Add = () => {
   
   const [name ,setName] = useState('')
@@ -19,11 +19,27 @@ const Add = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://127.0.0.1:8000/api/save", inputData);
-      alert("Employee Registration Successful");
-      navigate("/");
+      const result = await Swal.fire ({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, save it!'
+      });
+      if (result.isConfirmed) {
+        await axios.post(`http://127.0.0.1:8000/api/save`, inputData);
+        Swal.fire({
+          title: 'Saved!',
+          text: 'Your file has been saved.',
+          icon:'success'
+        });
+        navigate("/");
+      }
     } catch (err) {
-      alert("Employee Registration Failed");
+      console.error("Error saving employee:", err);
+       Swal.fire("Please Enter Field");
     }
   };
 

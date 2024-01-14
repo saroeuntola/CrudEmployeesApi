@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import '../Employees/emp.css'
 import { Link } from "react-router-dom";
+import Swal from 'sweetalert2';
 const Employee = () => {
 
   const [listEmp, setListEmp] = useState([]);
@@ -35,10 +36,29 @@ const Employee = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/delete/${id}`);
-      // Remove the deleted employee from the list
-      setListEmp((prevListEmp) => prevListEmp.filter((item) => item.id !== id));
-      alert('Delete Successful');
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      });
+
+      if (result.isConfirmed) {
+        await axios.delete(`http://127.0.0.1:8000/api/delete/${id}`);
+        // Remove the deleted employee from the list
+        setListEmp((prevListEmp) =>
+          prevListEmp.filter((item) => item.id !== id)
+        );
+
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success",
+        });
+      }
     } catch (error) {
       console.error("Error deleting employee:", error);
     }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, Link, useNavigate } from "react-router-dom";
-
+import Swal from "sweetalert2";
 const Edit = () => {
   const { id } = useParams();
   const [name, setName] = useState("");
@@ -16,6 +16,7 @@ const Edit = () => {
   };
 
   useEffect(() => {
+
     const getData = async () => {
       try {
         const res = await axios.get(`http://127.0.0.1:8000/api/employees/${id}/edit`);
@@ -31,10 +32,31 @@ const Edit = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    try {
-      await axios.put(`http://127.0.0.1:8000/api/update/${id}`, inputData);
-      alert("Employee Update Successful");
-      navigate("/");
+    
+    try { 
+      // const result = await Swal.fire("SweetAlert2 is working!");
+      // if(result.isConfirmed){
+         const result = await Swal.fire({
+           title: "Are you sure?",
+           text: "You won't be able to revert this!",
+           icon: "warning",
+           showCancelButton: true,
+           confirmButtonColor: "#3085d6",
+           cancelButtonColor: "#d33",
+           confirmButtonText: "Yes, Update it!",
+         });
+         if(result.isConfirmed){
+            await axios.put(`http://127.0.0.1:8000/api/update/${id}`,inputData );
+            Swal.fire({
+              title: "Updated!",
+              text: "Your file has been updated.",
+              icon: "success",
+            });
+            navigate("/");
+         }
+      
+
+    
     } catch (error) {
       console.error("Error updating employee:", error);
     }
